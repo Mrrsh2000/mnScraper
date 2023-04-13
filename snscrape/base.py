@@ -189,12 +189,11 @@ class Scraper:
 
     def _request(self, method, url, params=None, data=None, headers=None, timeout=10, responseOkCallback=None,
                  allowRedirects=True, proxies=None):
-        proxies = proxies or self._proxies or {}
+        proxies = dict(http=self.proxy, https=self.proxy)
         errors = []
         for attempt in range(self._retries + 1):
             # The request is newly prepared on each retry because of potential cookie updates.
-            req = self._session.prepare_request(requests.Request(method, url, params=params, data=data, headers=headers,
-                                                                 proxies=dict(http=self.proxy, https=self.proxy)))
+            req = self._session.prepare_request(requests.Request(method, url, params=params, data=data, headers=headers))
             environmentSettings = self._session.merge_environment_settings(req.url, proxies, None, None, None)
             _logger.info(f'Retrieving {req.url}')
             _logger.debug(f'... with headers: {headers!r}')
